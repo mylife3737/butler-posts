@@ -776,8 +776,14 @@
             arch.innerHTML = '';
 
             const done = JSON.parse(localStorage.getItem('c_done_v6') || '[]');
+            const doneTs = JSON.parse(localStorage.getItem('c_done_ts_v6') || '{}');
             const now = new Date();
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const fmtTs = (iso) => {
+                if (!iso) return '';
+                const d = new Date(iso);
+                return d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+            };
 
             const overdue = allPosts.filter(p => {
                 const pd = new Date(p.sortDate); pd.setHours(0,0,0,0);
@@ -806,7 +812,7 @@
                             <div style="display:flex;align-items:center;gap:1rem;">
                                 <span style="font-size:20px;">✅</span>
                                 <div>
-                                    <div style="font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:#64748b;">${p.date} &nbsp;·&nbsp; ${p.type}</div>
+                                    <div style="font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:#64748b;">${p.date} &nbsp;·&nbsp; ${p.type}${doneTs[p.id] ? ' &nbsp;·&nbsp; <span style="color:#059669;">Posted ' + fmtTs(doneTs[p.id]) + '</span>' : ''}</div>
                                     <div style="font-size:13px;font-weight:700;color:#1e293b;margin-top:2px;">${p.text.split('\n')[0].substring(0,80)}${p.text.length > 80 ? '…' : ''}</div>
                                 </div>
                             </div>
@@ -863,10 +869,13 @@
             const isFuture = pd > now;
 
             let done = JSON.parse(localStorage.getItem('c_done_v6') || '[]');
+            let doneTs = JSON.parse(localStorage.getItem('c_done_ts_v6') || '{}');
             const marking = !done.includes(id);
             if (marking) {
                 done.push(id);
+                doneTs[id] = new Date().toISOString();
                 localStorage.setItem('c_done_v6', JSON.stringify(done));
+                localStorage.setItem('c_done_ts_v6', JSON.stringify(doneTs));
                 localStorage.setItem('c_posted_date_v6', new Date().toDateString());
                 const isPast = pd < now;
                 if (isFuture) {
@@ -882,7 +891,9 @@
                 setTimeout(render, 3100);
             } else {
                 done = done.filter(i => i !== id);
+                delete doneTs[id];
                 localStorage.setItem('c_done_v6', JSON.stringify(done));
+                localStorage.setItem('c_done_ts_v6', JSON.stringify(doneTs));
                 render();
             }
         }
