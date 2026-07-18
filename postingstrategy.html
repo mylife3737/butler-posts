@@ -178,7 +178,7 @@
             z-index: 50;
             pointer-events: none;
             box-shadow: 0 12px 40px rgba(0,0,0,0.25);
-            animation: card-pop 4s forwards;
+            animation: card-pop 3s forwards;
             max-width: calc(100% - 1.5rem);
             width: max-content;
             text-align: center;
@@ -189,10 +189,29 @@
             .card-popup { font-size: 12px; letter-spacing: 1px; padding: 0.6rem 0.9rem; top: 2.75rem; }
         }
         @keyframes card-pop {
-            0%   { opacity: 0; transform: translate(-50%, -15px); }
-            15%  { opacity: 1; transform: translate(-50%, 0); }
-            75%  { opacity: 1; transform: translate(-50%, 0); }
-            100% { opacity: 0; transform: translate(-50%, 8px); }
+            0%   { opacity: 0; transform: translate(-50%, -10px); }
+            8%   { opacity: 1; transform: translate(-50%, 0); }
+            92%  { opacity: 1; transform: translate(-50%, 0); }
+            100% { opacity: 0; transform: translate(-50%, 4px); }
+        }
+        /* SWIPE LEFT — card slides off the page to signal it's archived */
+        .card-blackhole {
+            animation: swipe-left 0.4s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+            pointer-events: none;
+            will-change: transform, opacity;
+        }
+        @keyframes swipe-left {
+            0%   { transform: translate3d(0, 0, 0); opacity: 1; }
+            100% { transform: translate3d(-120vw, 0, 0); opacity: 0; }
+        }
+        /* NEXT CARD ENTERS FROM THE RIGHT — starts just off-screen so it feels like it swaps in right after the outgoing swipe */
+        .card-enter-right {
+            animation: enter-right 0.4s cubic-bezier(0.5, 0, 0.75, 0) both;
+            will-change: transform, opacity;
+        }
+        @keyframes enter-right {
+            0%   { transform: translate3d(60vw, 0, 0); opacity: 0; }
+            100% { transform: translate3d(0, 0, 0); opacity: 1; }
         }
         /* OVERDUE BADGE */
         .overdue-badge {
@@ -687,53 +706,53 @@
         // ── TODAY SOUNDS — index matches motivations[] so sound coords with message ──
         const soundsToday = [
             // 0: "YOU'RE CRUSHING IT" → We Will Rock You (BOOM BOOM CLAP x2)
-            function(){ const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [0,.36,1.02,1.38].forEach(dt=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sine';o.frequency.setValueAtTime(100,t+dt);o.frequency.exponentialRampToValueAtTime(48,t+dt+.2);g.gain.setValueAtTime(.65,t+dt);g.gain.exponentialRampToValueAtTime(.001,t+dt+.24);o.start(t+dt);o.stop(t+dt+.26); }); [.72,1.74].forEach(dt=>{ const len=Math.floor(C.sampleRate*.07),buf=C.createBuffer(1,len,C.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const s=C.createBufferSource();s.buffer=buf;const f=C.createBiquadFilter();f.type='bandpass';f.frequency.value=1300;f.Q.value=.9;const g=C.createGain();g.gain.setValueAtTime(.55,t+dt);g.gain.exponentialRampToValueAtTime(.001,t+dt+.1);s.connect(f);f.connect(g);g.connect(C.destination);s.start(t+dt); }); },
+            function(){ const C=AC(),t=C.currentTime; [0,.36,1.02,1.38].forEach(dt=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sine';o.frequency.setValueAtTime(100,t+dt);o.frequency.exponentialRampToValueAtTime(48,t+dt+.2);g.gain.setValueAtTime(.65,t+dt);g.gain.exponentialRampToValueAtTime(.001,t+dt+.24);o.start(t+dt);o.stop(t+dt+.26); }); [.72,1.74].forEach(dt=>{ const len=Math.floor(C.sampleRate*.07),buf=C.createBuffer(1,len,C.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const s=C.createBufferSource();s.buffer=buf;const f=C.createBiquadFilter();f.type='bandpass';f.frequency.value=1300;f.Q.value=.9;const g=C.createGain();g.gain.setValueAtTime(.55,t+dt);g.gain.exponentialRampToValueAtTime(.001,t+dt+.1);s.connect(f);f.connect(g);g.connect(C.destination);s.start(t+dt); }); },
             // 1: "VICTORY IS YOURS" → Eye of the Tiger opening riff (da-DUM da-da-DUM)
-            function(){ const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [[659,.0,.11,'square'],[659,.17,.11,'square'],[523,.34,.16,'square'],[392,.55,.38,'sawtooth']].forEach(([f,dt,dur,tp])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type=tp;o.frequency.value=f;g.gain.setValueAtTime(.28,t+dt);g.gain.setValueAtTime(.28,t+dt+dur-.02);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.04);o.start(t+dt);o.stop(t+dt+dur+.06); }); },
+            function(){ const C=AC(),t=C.currentTime; [[659,.0,.11,'square'],[659,.17,.11,'square'],[523,.34,.16,'square'],[392,.55,.38,'sawtooth']].forEach(([f,dt,dur,tp])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type=tp;o.frequency.value=f;g.gain.setValueAtTime(.28,t+dt);g.gain.setValueAtTime(.28,t+dt+dur-.02);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.04);o.start(t+dt);o.stop(t+dt+dur+.06); }); },
             // 2: "PROUD OF YOU, FUTURE REPRESENTATIVE" → Pomp and Circumstance opening phrase
-            function(){ const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [[392,.0,.38],[392,.43,.38],[392,.86,.19],[330,1.09,.38],[294,1.52,.44]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.28,t+dt);g.gain.setValueAtTime(.28,t+dt+dur-.02);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.07);o.start(t+dt);o.stop(t+dt+dur+.09); }); },
+            function(){ const C=AC(),t=C.currentTime; [[392,.0,.38],[392,.43,.38],[392,.86,.19],[330,1.09,.38],[294,1.52,.44]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.28,t+dt);g.gain.setValueAtTime(.28,t+dt+dur-.02);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.07);o.start(t+dt);o.stop(t+dt+dur+.09); }); },
             // 3: "FANTASTIC WORK" → Shave and a Haircut — Two Bits!
-            function(){ const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [[392,.0,.1],[392,.13,.1],[330,.27,.1],[392,.41,.1],[440,.55,.1],[392,.8,.2],[330,1.04,.38]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='square';o.frequency.value=f;g.gain.setValueAtTime(.22,t+dt);g.gain.setValueAtTime(.22,t+dt+dur-.01);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.04);o.start(t+dt);o.stop(t+dt+dur+.06); }); },
+            function(){ const C=AC(),t=C.currentTime; [[392,.0,.1],[392,.13,.1],[330,.27,.1],[392,.41,.1],[440,.55,.1],[392,.8,.2],[330,1.04,.38]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='square';o.frequency.value=f;g.gain.setValueAtTime(.22,t+dt);g.gain.setValueAtTime(.22,t+dt+dur-.01);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.04);o.start(t+dt);o.stop(t+dt+dur+.06); }); },
             // 4: "INCREDIBLE MOMENTUM" → Star Wars — opening 5 notes (G G G Eb Bb)
-            function(){ const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [[392,.0,.14],[392,.19,.14],[392,.38,.45],[311,.88,.14],[466,1.07,.45]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sawtooth';o.frequency.value=f;g.gain.setValueAtTime(.25,t+dt);g.gain.setValueAtTime(.25,t+dt+dur-.02);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.05);o.start(t+dt);o.stop(t+dt+dur+.07); }); },
+            function(){ const C=AC(),t=C.currentTime; [[392,.0,.14],[392,.19,.14],[392,.38,.45],[311,.88,.14],[466,1.07,.45]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sawtooth';o.frequency.value=f;g.gain.setValueAtTime(.25,t+dt);g.gain.setValueAtTime(.25,t+dt+dur-.02);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.05);o.start(t+dt);o.stop(t+dt+dur+.07); }); },
             // 5: "LEADING THE WAY" → Charge! bugle call
-            function(){ const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [[392,.0,.1],[523,.14,.1],[659,.28,.1],[784,.42,.36],[784,.86,.1],[659,1.0,.08],[784,1.12,.38]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sawtooth';o.frequency.value=f;g.gain.setValueAtTime(.28,t+dt);g.gain.setValueAtTime(.28,t+dt+dur-.01);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.04);o.start(t+dt);o.stop(t+dt+dur+.06); }); },
+            function(){ const C=AC(),t=C.currentTime; [[392,.0,.1],[523,.14,.1],[659,.28,.1],[784,.42,.36],[784,.86,.1],[659,1.0,.08],[784,1.12,.38]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sawtooth';o.frequency.value=f;g.gain.setValueAtTime(.28,t+dt);g.gain.setValueAtTime(.28,t+dt+dur-.01);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.04);o.start(t+dt);o.stop(t+dt+dur+.06); }); },
         ];
 
         // ── EARLY SOUNDS — each index coords with earlyMessages[] at same index ──
         const soundsEarly = [
             // 0: "AHEAD OF SCHEDULE ⚡" → Road Runner beep beep (two ascending tones)
-            function(){ const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [[600,0,.12],[850,.18,.12]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.35,t+dt);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.06);o.start(t+dt);o.stop(t+dt+dur+.08); }); },
+            function(){ const C=AC(),t=C.currentTime; [[600,0,.12],[850,.18,.12]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.35,t+dt);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.06);o.start(t+dt);o.stop(t+dt+dur+.08); }); },
             // 1: "FUTURE-PROOFING 🌟" → Sci-fi ascending sawtooth arp
-            function(){ const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [261,330,392,523,659,784,1047].forEach((f,i)=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sawtooth';o.frequency.value=f;const nt=t+i*.1;g.gain.setValueAtTime(0,nt);g.gain.linearRampToValueAtTime(.2,nt+.03);g.gain.exponentialRampToValueAtTime(.001,nt+.36);o.start(nt);o.stop(nt+.38); }); },
+            function(){ const C=AC(),t=C.currentTime; [261,330,392,523,659,784,1047].forEach((f,i)=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sawtooth';o.frequency.value=f;const nt=t+i*.1;g.gain.setValueAtTime(0,nt);g.gain.linearRampToValueAtTime(.2,nt+.03);g.gain.exponentialRampToValueAtTime(.001,nt+.36);o.start(nt);o.stop(nt+.38); }); },
             // 2: "Already done?! 🚀" → Rocket whoosh build + liftoff ping
-            function(){ const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; const len=Math.floor(C.sampleRate*.65),buf=C.createBuffer(1,len,C.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const s=C.createBufferSource();s.buffer=buf;const f=C.createBiquadFilter();f.type='bandpass';f.frequency.setValueAtTime(80,t);f.frequency.exponentialRampToValueAtTime(5000,t+.6);f.Q.value=1.5;const g=C.createGain();g.gain.setValueAtTime(.1,t);g.gain.linearRampToValueAtTime(.5,t+.5);g.gain.exponentialRampToValueAtTime(.001,t+.7);s.connect(f);f.connect(g);g.connect(C.destination);s.start(t); const o=C.createOscillator(),g2=C.createGain();o.connect(g2);g2.connect(C.destination);o.type='sine';o.frequency.setValueAtTime(880,t+.6);o.frequency.exponentialRampToValueAtTime(1760,t+.86);g2.gain.setValueAtTime(.26,t+.6);g2.gain.exponentialRampToValueAtTime(.001,t+.96);o.start(t+.6);o.stop(t+.97); },
+            function(){ const C=AC(),t=C.currentTime; const len=Math.floor(C.sampleRate*.65),buf=C.createBuffer(1,len,C.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const s=C.createBufferSource();s.buffer=buf;const f=C.createBiquadFilter();f.type='bandpass';f.frequency.setValueAtTime(80,t);f.frequency.exponentialRampToValueAtTime(5000,t+.6);f.Q.value=1.5;const g=C.createGain();g.gain.setValueAtTime(.1,t);g.gain.linearRampToValueAtTime(.5,t+.5);g.gain.exponentialRampToValueAtTime(.001,t+.7);s.connect(f);f.connect(g);g.connect(C.destination);s.start(t); const o=C.createOscillator(),g2=C.createGain();o.connect(g2);g2.connect(C.destination);o.type='sine';o.frequency.setValueAtTime(880,t+.6);o.frequency.exponentialRampToValueAtTime(1760,t+.86);g2.gain.setValueAtTime(.26,t+.6);g2.gain.exponentialRampToValueAtTime(.001,t+.96);o.start(t+.6);o.stop(t+.97); },
             // 3: "Nailing it EARLY 🎯" → Arrow whoosh + bullseye double-ping
-            function(){ const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; const len=Math.floor(C.sampleRate*.2),buf=C.createBuffer(1,len,C.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const s=C.createBufferSource();s.buffer=buf;const f=C.createBiquadFilter();f.type='bandpass';f.frequency.setValueAtTime(900,t);f.frequency.exponentialRampToValueAtTime(80,t+.18);f.Q.value=2;const g=C.createGain();g.gain.setValueAtTime(.38,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);s.connect(f);f.connect(g);g.connect(C.destination);s.start(t); [1760,2217].forEach(fr=>{ const o=C.createOscillator(),gv=C.createGain();o.connect(gv);gv.connect(C.destination);o.type='sine';o.frequency.value=fr;gv.gain.setValueAtTime(.22,t+.24);gv.gain.exponentialRampToValueAtTime(.001,t+.58);o.start(t+.24);o.stop(t+.6); }); },
+            function(){ const C=AC(),t=C.currentTime; const len=Math.floor(C.sampleRate*.2),buf=C.createBuffer(1,len,C.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const s=C.createBufferSource();s.buffer=buf;const f=C.createBiquadFilter();f.type='bandpass';f.frequency.setValueAtTime(900,t);f.frequency.exponentialRampToValueAtTime(80,t+.18);f.Q.value=2;const g=C.createGain();g.gain.setValueAtTime(.38,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);s.connect(f);f.connect(g);g.connect(C.destination);s.start(t); [1760,2217].forEach(fr=>{ const o=C.createOscillator(),gv=C.createGain();o.connect(gv);gv.connect(C.destination);o.type='sine';o.frequency.value=fr;gv.gain.setValueAtTime(.22,t+.24);gv.gain.exponentialRampToValueAtTime(.001,t+.58);o.start(t+.24);o.stop(t+.6); }); },
             // 4: "EARLY BIRD WINS! 💪" → Bird chirps (5 quick chirps)
-            function(){ const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [0,.22,.44,.62,.8].forEach((dt,i)=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sine';const b=2000+i*80;o.frequency.setValueAtTime(b,t+dt);o.frequency.exponentialRampToValueAtTime(b*1.35,t+dt+.06);o.frequency.exponentialRampToValueAtTime(b*.85,t+dt+.14);g.gain.setValueAtTime(0,t+dt);g.gain.linearRampToValueAtTime(.24,t+dt+.02);g.gain.exponentialRampToValueAtTime(.001,t+dt+.17);o.start(t+dt);o.stop(t+dt+.19); }); },
+            function(){ const C=AC(),t=C.currentTime; [0,.22,.44,.62,.8].forEach((dt,i)=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sine';const b=2000+i*80;o.frequency.setValueAtTime(b,t+dt);o.frequency.exponentialRampToValueAtTime(b*1.35,t+dt+.06);o.frequency.exponentialRampToValueAtTime(b*.85,t+dt+.14);g.gain.setValueAtTime(0,t+dt);g.gain.linearRampToValueAtTime(.24,t+dt+.02);g.gain.exponentialRampToValueAtTime(.001,t+dt+.17);o.start(t+dt);o.stop(t+dt+.19); }); },
             // 5: "PROACTIVE QUEEN! 🔥" → Royal trumpet fanfare ascending (G C E G C)
-            function(){ const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [[392,.0,.2],[523,.25,.2],[659,.5,.2],[784,.75,.22],[1047,1.0,.5]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sawtooth';o.frequency.value=f;g.gain.setValueAtTime(.26,t+dt);g.gain.setValueAtTime(.26,t+dt+dur-.02);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.06);o.start(t+dt);o.stop(t+dt+dur+.08); }); },
+            function(){ const C=AC(),t=C.currentTime; [[392,.0,.2],[523,.25,.2],[659,.5,.2],[784,.75,.22],[1047,1.0,.5]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sawtooth';o.frequency.value=f;g.gain.setValueAtTime(.26,t+dt);g.gain.setValueAtTime(.26,t+dt+dur-.02);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.06);o.start(t+dt);o.stop(t+dt+dur+.08); }); },
             // 6: "Getting ahead ✨" → Magic wand glitter (high sine ascending arp)
-            function(){ const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [880,1108,1319,1568,1760,2093,2349].forEach((f,i)=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sine';o.frequency.value=f;const nt=t+i*.1;g.gain.setValueAtTime(0,nt);g.gain.linearRampToValueAtTime(.18,nt+.03);g.gain.exponentialRampToValueAtTime(.001,nt+.28);o.start(nt);o.stop(nt+.3); }); },
+            function(){ const C=AC(),t=C.currentTime; [880,1108,1319,1568,1760,2093,2349].forEach((f,i)=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sine';o.frequency.value=f;const nt=t+i*.1;g.gain.setValueAtTime(0,nt);g.gain.linearRampToValueAtTime(.18,nt+.03);g.gain.exponentialRampToValueAtTime(.001,nt+.28);o.start(nt);o.stop(nt+.3); }); },
             // 7: "STRATEGIC GENIUS! 🏆" → Eureka! quick arp then held high ding
-            function(){ const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [[523,.0,.1],[659,.13,.1],[784,.26,.1],[1047,.39,.16]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.25,t+dt);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.08);o.start(t+dt);o.stop(t+dt+dur+.1); }); const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sine';o.frequency.value=2093;g.gain.setValueAtTime(.28,t+.6);g.gain.exponentialRampToValueAtTime(.001,t+1.1);o.start(t+.6);o.stop(t+1.1); },
+            function(){ const C=AC(),t=C.currentTime; [[523,.0,.1],[659,.13,.1],[784,.26,.1],[1047,.39,.16]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.25,t+dt);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.08);o.start(t+dt);o.stop(t+dt+dur+.1); }); const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sine';o.frequency.value=2093;g.gain.setValueAtTime(.28,t+.6);g.gain.exponentialRampToValueAtTime(.001,t+1.1);o.start(t+.6);o.stop(t+1.1); },
             // 8: "EARLY POSTER ALERT! ⭐" → Fun two-sweep siren
-            function(){ const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [0,.38].forEach(dt=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sine';o.frequency.setValueAtTime(600,t+dt);o.frequency.exponentialRampToValueAtTime(1300,t+dt+.15);o.frequency.exponentialRampToValueAtTime(600,t+dt+.3);g.gain.setValueAtTime(.24,t+dt);g.gain.setValueAtTime(.24,t+dt+.28);g.gain.exponentialRampToValueAtTime(.001,t+dt+.33);o.start(t+dt);o.stop(t+dt+.35); }); },
+            function(){ const C=AC(),t=C.currentTime; [0,.38].forEach(dt=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sine';o.frequency.setValueAtTime(600,t+dt);o.frequency.exponentialRampToValueAtTime(1300,t+dt+.15);o.frequency.exponentialRampToValueAtTime(600,t+dt+.3);g.gain.setValueAtTime(.24,t+dt);g.gain.setValueAtTime(.24,t+dt+.28);g.gain.exponentialRampToValueAtTime(.001,t+dt+.33);o.start(t+dt);o.stop(t+dt+.35); }); },
             // 9: "Ahead of the curve 💙" → Cool jazz Am7 ascending riff
-            function(){ const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [[220,.0,.12],[261,.15,.12],[329,.32,.12],[392,.5,.25],[329,.82,.1],[440,.96,.32]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.22,t+dt);g.gain.setValueAtTime(.22,t+dt+dur-.01);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.05);o.start(t+dt);o.stop(t+dt+dur+.07); }); },
+            function(){ const C=AC(),t=C.currentTime; [[220,.0,.12],[261,.15,.12],[329,.32,.12],[392,.5,.25],[329,.82,.1],[440,.96,.32]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.22,t+dt);g.gain.setValueAtTime(.22,t+dt+dur-.01);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.05);o.start(t+dt);o.stop(t+dt+dur+.07); }); },
             // 10: "WOW! Scheduling superstar 🎉" → Party horn blat + confetti pops
-            function(){ const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sawtooth';o.frequency.setValueAtTime(440,t);o.frequency.linearRampToValueAtTime(580,t+.32);g.gain.setValueAtTime(.3,t);g.gain.setValueAtTime(.3,t+.3);g.gain.exponentialRampToValueAtTime(.001,t+.36);o.start(t);o.stop(t+.37); [.42,.5,.59,.65,.74].forEach((dt,i)=>{ const o2=C.createOscillator(),g2=C.createGain();o2.connect(g2);g2.connect(C.destination);o2.type='sine';const f=[800,1200,600,1500,1000][i];o2.frequency.setValueAtTime(f,t+dt);o2.frequency.exponentialRampToValueAtTime(f*.3,t+dt+.06);g2.gain.setValueAtTime(.2,t+dt);g2.gain.exponentialRampToValueAtTime(.001,t+dt+.08);o2.start(t+dt);o2.stop(t+dt+.1); }); },
+            function(){ const C=AC(),t=C.currentTime; const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sawtooth';o.frequency.setValueAtTime(440,t);o.frequency.linearRampToValueAtTime(580,t+.32);g.gain.setValueAtTime(.3,t);g.gain.setValueAtTime(.3,t+.3);g.gain.exponentialRampToValueAtTime(.001,t+.36);o.start(t);o.stop(t+.37); [.42,.5,.59,.65,.74].forEach((dt,i)=>{ const o2=C.createOscillator(),g2=C.createGain();o2.connect(g2);g2.connect(C.destination);o2.type='sine';const f=[800,1200,600,1500,1000][i];o2.frequency.setValueAtTime(f,t+dt);o2.frequency.exponentialRampToValueAtTime(f*.3,t+dt+.06);g2.gain.setValueAtTime(.2,t+dt);g2.gain.exponentialRampToValueAtTime(.001,t+dt+.08);o2.start(t+dt);o2.stop(t+dt+.1); }); },
             // 11: "CRUSHING THE CALENDAR! 🌈" → Full C-major rainbow scale (C to C two octaves)
-            function(){ const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [261,294,330,349,392,440,494,523,1047].forEach((f,i)=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='triangle';o.frequency.value=f;const nt=t+i*.12;const dur=i===8?.5:.16;g.gain.setValueAtTime(.22,nt);g.gain.exponentialRampToValueAtTime(.001,nt+dur+.04);o.start(nt);o.stop(nt+dur+.06); }); },
+            function(){ const C=AC(),t=C.currentTime; [261,294,330,349,392,440,494,523,1047].forEach((f,i)=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='triangle';o.frequency.value=f;const nt=t+i*.12;const dur=i===8?.5:.16;g.gain.setValueAtTime(.22,nt);g.gain.exponentialRampToValueAtTime(.001,nt+dur+.04);o.start(nt);o.stop(nt+dur+.06); }); },
         ];
 
         function playToday(idx) { try { soundsToday[idx % soundsToday.length](); } catch(e){} }
         function playEarly(idx) { try { soundsEarly[idx % soundsEarly.length](); } catch(e){} }
         // Sad trombone — wah wah wah waaah (descending muted)
-        function playOverdue(){ try { const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [[349,.0,.22],[311,.28,.22],[277,.56,.22],[233,.84,.6]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sawtooth';o.frequency.setValueAtTime(f,t+dt);o.frequency.linearRampToValueAtTime(f*.92,t+dt+dur);g.gain.setValueAtTime(.22,t+dt);g.gain.setValueAtTime(.22,t+dt+dur-.03);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.06);o.start(t+dt);o.stop(t+dt+dur+.08); }); } catch(e){} }
+        function playOverdue(){ try { const C=AC(),t=C.currentTime; [[349,.0,.22],[311,.28,.22],[277,.56,.22],[233,.84,.6]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sawtooth';o.frequency.setValueAtTime(f,t+dt);o.frequency.linearRampToValueAtTime(f*.92,t+dt+dur);g.gain.setValueAtTime(.22,t+dt);g.gain.setValueAtTime(.22,t+dt+dur-.03);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.06);o.start(t+dt);o.stop(t+dt+dur+.08); }); } catch(e){} }
         // Jul 17 apology — soft descending chime (bell-like, sincere)
-        function playJul17(){ try { const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [[880,.0,.55],[659,.35,.7],[523,.85,1.1]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sine';o.frequency.value=f; g.gain.setValueAtTime(.001,t+dt); g.gain.exponentialRampToValueAtTime(.28,t+dt+.04); g.gain.exponentialRampToValueAtTime(.001,t+dt+dur); o.start(t+dt); o.stop(t+dt+dur+.05); }); } catch(e){} }
+        function playJul17(){ try { const C=AC(),t=C.currentTime; [[880,.0,.55],[659,.35,.7],[523,.85,1.1]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sine';o.frequency.value=f; g.gain.setValueAtTime(.001,t+dt); g.gain.exponentialRampToValueAtTime(.28,t+dt+.04); g.gain.exponentialRampToValueAtTime(.001,t+dt+dur); o.start(t+dt); o.stop(t+dt+dur+.05); }); } catch(e){} }
 
         const popColors = ['#10b981','#3b82f6','#8b5cf6','#ec4899','#f97316','#06b6d4','#1a2d5a'];
         function showPopOnCard(id, idx) {
@@ -744,7 +763,7 @@
             pop.style.background = popColors[Math.floor(Math.random() * popColors.length)];
             pop.textContent = motivations[idx % motivations.length];
             card.appendChild(pop);
-            setTimeout(() => pop.remove(), 4000);
+            later(() => pop.remove(), 3000);
         }
 
         function showEarlyPop(id, idx) {
@@ -756,7 +775,7 @@
             pop.style.color = '#1c1917';
             pop.textContent = earlyMessages[idx % earlyMessages.length];
             card.appendChild(pop);
-            setTimeout(() => pop.remove(), 4000);
+            later(() => pop.remove(), 3000);
         }
 
         function showOverduePop(id, idx) {
@@ -768,7 +787,41 @@
             pop.style.color = '#fef3c7';
             pop.textContent = overdueMessages[idx % overdueMessages.length];
             card.appendChild(pop);
-            setTimeout(() => pop.remove(), 4200);
+            later(() => pop.remove(), 3000);
+        }
+
+        // Single shared AudioContext — zero warm-up lag between checkbox and first tone.
+        let _ctx;
+        function AC(){
+            const Ctor = window.AudioContext || window.webkitAudioContext;
+            if (!_ctx || _ctx.state === 'closed') _ctx = new Ctor();
+            if (_ctx.state === 'suspended') _ctx.resume();
+            return _ctx;
+        }
+        function killAudio(){ if (_ctx){ try{_ctx.close();}catch(e){} _ctx=null; } }
+        const _pending = [];
+        function later(fn, ms){ const id = setTimeout(()=>{ _pending.splice(_pending.indexOf(id),1); fn(); }, ms); _pending.push(id); return id; }
+        function killAll(){
+            killAudio();
+            _pending.forEach(clearTimeout); _pending.length = 0;
+            document.querySelectorAll('.card-popup').forEach(e => e.remove());
+        }
+
+        function blackhole(id) {
+            const card = document.querySelector('[data-post-id="' + id + '"]');
+            const row = card && card.closest('.deployment-row');
+            if (row) row.classList.add('card-blackhole');
+        }
+        function renderThenEnter() {
+            render();
+            // Always scroll up to the earliest post not yet marked done — the "next thing to work on".
+            const first = document.querySelector('#deployment-container .deployment-row');
+            if (!first) return;
+            first.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        function outgoingIndex(id) {
+            const rows = Array.from(document.querySelectorAll('#deployment-container .deployment-row'));
+            return rows.findIndex(r => r.querySelector('[data-post-id="' + id + '"]'));
         }
 
         // Track last popup index per post id so a re-mark always draws a different one.
@@ -793,11 +846,11 @@
             undo.style.pointerEvents = 'auto';
             undo.style.cursor = 'pointer';
             undo.style.border = '2px solid #fff';
-            undo.style.animation = 'card-pop 3.6s forwards';
+            undo.style.animation = 'card-pop 2.5s forwards';
             undo.textContent = '↩ Undo';
-            undo.onclick = () => { undo.remove(); toggle(id); };
+            undo.onclick = () => { undo.remove(); killAll(); toggle(id); };
             card.appendChild(undo);
-            setTimeout(() => undo.remove(), 3600);
+            later(() => undo.remove(), 2500);
         }
 
         function showJul17Pop(id, idx) {
@@ -811,10 +864,10 @@
             pop.style.whiteSpace = 'normal';
             pop.style.letterSpacing = '.5px';
             pop.style.padding = '1rem 1.25rem';
-            pop.style.animation = 'card-pop 5.5s forwards';
+            pop.style.animation = 'card-pop 4s forwards';
             pop.textContent = jul17Messages[idx % jul17Messages.length];
             card.appendChild(pop);
-            setTimeout(() => pop.remove(), 5500);
+            later(() => pop.remove(), 4000);
         }
 
         // Photo suggestion ONLY for events (or similar). Never on personal/group daily posts.
@@ -945,8 +998,9 @@
                     if (isJul17) {
                         const idx = pickIdx(id, jul17Messages.length);
                         showJul17Pop(id, idx); playJul17();
-                        setTimeout(() => showUndoOnCard(id), 5500);
-                        setTimeout(render, 9200); return;
+                        later(() => showUndoOnCard(id), 4000);
+                        later(() => blackhole(id), 6500);
+                        later(renderThenEnter, 6600); return;
                     } else {
                         const idx = pickIdx(id, overdueMessages.length);
                         showOverduePop(id, idx); playOverdue();
@@ -958,9 +1012,11 @@
                     const todayPosts = allPosts.filter(x => { const xd = new Date(x.sortDate); xd.setHours(0,0,0,0); return xd.getTime() === now.getTime(); });
                     if (todayPosts.length && todayPosts.every(x => done.includes(x.id))) updateTicker(true);
                 }
-                setTimeout(() => showUndoOnCard(id), 4000);
-                setTimeout(render, 7800);
+                later(() => showUndoOnCard(id), 3000);
+                later(() => blackhole(id), 5500);
+                later(renderThenEnter, 5600);
             } else {
+                killAll();
                 done = done.filter(i => i !== id);
                 delete doneTs[id];
                 localStorage.setItem('c_done_v6', JSON.stringify(done));
