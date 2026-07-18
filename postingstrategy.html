@@ -364,7 +364,7 @@
     localStorage.setItem('fbUrlSkippedAt', String(Date.now()));
     document.getElementById('fbUrlModal').style.display='none';
   }
-  window.addEventListener('load', function(){
+  (function(){
     var v=localStorage.getItem('cindy_fb_p_v6');
     var filled = v && v.trim() && v!=='https://www.facebook.com/' && /facebook\.com\/./.test(v);
     if(filled) return;
@@ -373,7 +373,7 @@
     if(Date.now()-skipped>=dayMs){
       document.getElementById('fbUrlModal').style.display='flex';
     }
-  });
+  })();
 </script>
 
     <header class="max-w-7xl mx-auto p-6 md:p-10 flex flex-col items-start gap-4 border-b border-slate-200">
@@ -390,45 +390,33 @@
     </nav>
 
     <div id="view-rollout" class="p-4 md:p-10">
-        <div class="max-w-7xl mx-auto mb-8">
-            <div class="relative overflow-hidden rounded-3xl p-1 bg-gradient-to-r from-blue-600 via-fuchsia-500 to-red-500 shadow-lg">
-                <div class="bg-white/95 backdrop-blur rounded-[1.35rem] p-4 md:p-5">
-                    <div class="flex items-center justify-between gap-3 mb-3">
-                        <div class="flex items-center gap-2">
-                            <span class="text-lg animate-pulse">✨</span>
-                            <span class="text-[11px] font-black uppercase tracking-widest bg-gradient-to-r from-blue-700 to-red-600 bg-clip-text text-transparent">Post in 3 taps</span>
-                        </div>
-                        <span class="text-[9px] font-bold uppercase tracking-widest text-slate-400 hidden md:inline">60 sec</span>
-                    </div>
-                    <div class="flex items-stretch gap-2 md:gap-3 text-white">
-                        <div class="flex-1 relative bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl p-3 flex items-center gap-2.5 shadow-md hover:scale-[1.02] transition-transform">
-                            <div class="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center text-xl shrink-0">📋</div>
-                            <div class="min-w-0">
-                                <div class="text-[9px] font-black uppercase tracking-widest opacity-70 leading-none mb-0.5">Step 1</div>
-                                <div class="text-[13px] font-black leading-tight">Copy the post</div>
-                            </div>
-                        </div>
-                        <div class="self-center text-slate-300 font-bold hidden sm:block">→</div>
-                        <div class="flex-1 relative bg-gradient-to-br from-fuchsia-500 to-pink-600 rounded-xl p-3 flex items-center gap-2.5 shadow-md hover:scale-[1.02] transition-transform">
-                            <div class="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center text-xl shrink-0">📱</div>
-                            <div class="min-w-0">
-                                <div class="text-[9px] font-black uppercase tracking-widest opacity-70 leading-none mb-0.5">Step 2</div>
-                                <div class="text-[13px] font-black leading-tight">Paste & post</div>
-                                <div class="text-[9px] font-semibold opacity-90 leading-tight mt-0.5">long‑press <span class="hidden md:inline">· Ctrl+V</span></div>
-                            </div>
-                        </div>
-                        <div class="self-center text-slate-300 font-bold hidden sm:block">→</div>
-                        <div class="flex-1 relative bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-3 flex items-center gap-2.5 shadow-md hover:scale-[1.02] transition-transform">
-                            <div class="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center text-xl shrink-0">✅</div>
-                            <div class="min-w-0">
-                                <div class="text-[9px] font-black uppercase tracking-widest opacity-70 leading-none mb-0.5">Step 3</div>
-                                <div class="text-[13px] font-black leading-tight">Mark done</div>
-                            </div>
-                        </div>
-                    </div>
+        <div class="max-w-7xl mx-auto mb-8 pb-5 border-b border-slate-200/70">
+            <div class="grid grid-cols-3 gap-4 md:gap-8" style="animation:qsFade .6s ease-out">
+                <div class="qs-step">
+                    <div class="qs-num">01</div>
+                    <div class="qs-title">Copy</div>
+                    <div class="qs-sub">Tap the platform button on today's card.</div>
+                </div>
+                <div class="qs-step">
+                    <div class="qs-num">02</div>
+                    <div class="qs-title">Paste</div>
+                    <div class="qs-sub">Long‑press in the post box, or ⌘ V / Ctrl V.</div>
+                </div>
+                <div class="qs-step">
+                    <div class="qs-num">03</div>
+                    <div class="qs-title">Mark done</div>
+                    <div class="qs-sub">Tap Mark Done. Repeat for each badge.</div>
                 </div>
             </div>
         </div>
+        <style>
+          .qs-step{border-left:1px solid #e2e8f0;padding-left:1rem}
+          .qs-step:first-child{border-left:0;padding-left:0}
+          .qs-num{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;font-weight:600;color:#94a3b8;letter-spacing:.08em;margin-bottom:.35rem}
+          .qs-title{font-size:clamp(15px,2.2vw,20px);font-weight:600;letter-spacing:-.02em;color:#0f172a;line-height:1.15;margin-bottom:.2rem}
+          .qs-sub{font-size:12px;color:#64748b;line-height:1.35;font-weight:400}
+          @keyframes qsFade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+        </style>
         <!-- TICKER -->
         <div id="ticker-container" class="max-w-7xl mx-auto ticker-wrap mb-10">
             <div id="ticker-content" class="ticker-content inline-block whitespace-nowrap" style="animation: ticker 20s linear infinite;">
