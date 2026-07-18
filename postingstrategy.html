@@ -387,13 +387,32 @@
     </nav>
 
     <div id="view-rollout" class="p-4 md:p-10">
-        <div class="max-w-7xl mx-auto bg-blue-50 border border-blue-200 rounded-2xl p-5 mb-8">
-            <div class="text-[11px] font-black uppercase text-blue-900 tracking-widest mb-3">How to use this</div>
-            <ol class="text-[13px] font-semibold text-slate-800 space-y-1.5 list-decimal pl-5 leading-snug">
-                <li>Open today's card → tap the <b>copy button</b> for the platform (FB Personal / FB Group / ND Public / ND Group).</li>
-                <li>Switch to Facebook or Nextdoor → paste → post.</li>
-                <li>Come back → tap <b>Mark Done</b>. Repeat for every platform badge shown.</li>
-            </ol>
+        <div class="max-w-7xl mx-auto mb-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-red-600 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-widest">Quickstart</span>
+                <span class="text-[11px] font-black uppercase text-slate-500 tracking-widest">How to post in under 60 seconds</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="relative bg-gradient-to-br from-blue-700 to-blue-900 text-white rounded-2xl p-5 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                    <div class="absolute top-3 right-4 text-4xl font-black text-white/20">1</div>
+                    <div class="text-2xl mb-2">📋</div>
+                    <div class="text-[10px] font-black uppercase tracking-widest opacity-80 mb-1">Step 1 · Copy</div>
+                    <div class="text-[13px] font-bold leading-snug">Open today's card. Tap the <b>copy</b> button for each platform badge shown (<span class="whitespace-nowrap">FB Personal / FB Group / ND Public / ND Group</span>).</div>
+                </div>
+                <div class="relative bg-gradient-to-br from-red-500 to-red-700 text-white rounded-2xl p-5 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                    <div class="absolute top-3 right-4 text-4xl font-black text-white/20">2</div>
+                    <div class="text-2xl mb-2">📱</div>
+                    <div class="text-[10px] font-black uppercase tracking-widest opacity-80 mb-1">Step 2 · Paste & Post</div>
+                    <div class="text-[13px] font-bold leading-snug mb-1">Open FB or Nextdoor. Tap the post box.</div>
+                    <div class="text-[11px] font-semibold opacity-90 leading-snug"><b>Phone:</b> long-press → tap <span class="bg-white/25 px-1.5 rounded">Paste</span><br><b>Computer:</b> <span class="bg-white/25 px-1.5 rounded">Ctrl+V</span> (Win) or <span class="bg-white/25 px-1.5 rounded">⌘+V</span> (Mac)</div>
+                </div>
+                <div class="relative bg-gradient-to-br from-emerald-500 to-emerald-700 text-white rounded-2xl p-5 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                    <div class="absolute top-3 right-4 text-4xl font-black text-white/20">3</div>
+                    <div class="text-2xl mb-2">✅</div>
+                    <div class="text-[10px] font-black uppercase tracking-widest opacity-80 mb-1">Step 3 · Mark Done</div>
+                    <div class="text-[13px] font-bold leading-snug">Come back and tap <b>Mark Done</b>. Repeat for every platform badge on today's card.</div>
+                </div>
+            </div>
         </div>
         <!-- TICKER -->
         <div id="ticker-container" class="max-w-7xl mx-auto ticker-wrap mb-10">
