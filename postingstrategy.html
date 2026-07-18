@@ -364,16 +364,7 @@
     localStorage.setItem('fbUrlSkippedAt', String(Date.now()));
     document.getElementById('fbUrlModal').style.display='none';
   }
-  (function(){
-    var v=localStorage.getItem('cindy_fb_p_v6');
-    var filled = v && v.trim() && v!=='https://www.facebook.com/' && /facebook\.com\/./.test(v);
-    if(filled) return;
-    var skipped=parseInt(localStorage.getItem('fbUrlSkippedAt')||'0',10);
-    var dayMs=24*60*60*1000;
-    if(Date.now()-skipped>=dayMs){
-      document.getElementById('fbUrlModal').style.display='flex';
-    }
-  })();
+  // ponytail: auto-popup removed per request; setup page still has the input.
 </script>
 
     <header class="max-w-7xl mx-auto p-6 md:p-10 flex flex-col items-start gap-4 border-b border-slate-200">
@@ -390,31 +381,37 @@
     </nav>
 
     <div id="view-rollout" class="p-4 md:p-10">
-        <div class="max-w-7xl mx-auto mb-8 pb-5 border-b border-slate-200/70">
-            <div class="grid grid-cols-3 gap-4 md:gap-8" style="animation:qsFade .6s ease-out">
-                <div class="qs-step">
+        <div class="max-w-7xl mx-auto mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" style="animation:qsFade .6s ease-out">
+                <div class="qs-step qs-1">
                     <div class="qs-num">01</div>
-                    <div class="qs-title">Copy</div>
-                    <div class="qs-sub">Tap <b>FB Personal</b>, <b>FB Group</b>, <b>ND Public</b>, or <b>ND Group</b> on today's card.</div>
+                    <div class="qs-title">Copy the post</div>
+                    <div class="qs-sub">Tap a colored button on today's post to copy the text to your clipboard.</div>
                 </div>
-                <div class="qs-step">
+                <div class="qs-step qs-2">
                     <div class="qs-num">02</div>
-                    <div class="qs-title">Paste</div>
-                    <div class="qs-sub">Long‑press in the post box, or ⌘ V / Ctrl V.</div>
+                    <div class="qs-title">Paste into the app</div>
+                    <div class="qs-sub">Open Facebook or Nextdoor. Long‑press the post box → Paste. On desktop, ⌘ V or Ctrl V.</div>
                 </div>
-                <div class="qs-step">
+                <div class="qs-step qs-3">
                     <div class="qs-num">03</div>
-                    <div class="qs-title">Mark done</div>
-                    <div class="qs-sub">Tap Mark Done. Repeat for each badge.</div>
+                    <div class="qs-title">Mark it done</div>
+                    <div class="qs-sub">Come back and tap Mark Done so the ticker knows today's work is finished.</div>
                 </div>
             </div>
         </div>
         <style>
-          .qs-step{border-left:1px solid #e2e8f0;padding-left:1rem}
-          .qs-step:first-child{border-left:0;padding-left:0}
-          .qs-num{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;font-weight:600;color:#94a3b8;letter-spacing:.08em;margin-bottom:.35rem}
-          .qs-title{font-size:clamp(15px,2.2vw,20px);font-weight:600;letter-spacing:-.02em;color:#0f172a;line-height:1.15;margin-bottom:.2rem}
-          .qs-sub{font-size:12px;color:#64748b;line-height:1.35;font-weight:400}
+          .qs-step{position:relative;border-radius:16px;padding:1rem 1.1rem;overflow:hidden;transition:transform .2s ease}
+          .qs-step:hover{transform:translateY(-2px)}
+          .qs-1{background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 100%);border:1px solid #bfdbfe}
+          .qs-2{background:linear-gradient(135deg,#fdf4ff 0%,#fae8ff 100%);border:1px solid #f0abfc}
+          .qs-3{background:linear-gradient(135deg,#ecfdf5 0%,#d1fae5 100%);border:1px solid #6ee7b7}
+          .qs-num{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;font-weight:700;letter-spacing:.1em;margin-bottom:.4rem;opacity:.65}
+          .qs-1 .qs-num{color:#1d4ed8}
+          .qs-2 .qs-num{color:#a21caf}
+          .qs-3 .qs-num{color:#047857}
+          .qs-title{font-size:clamp(15px,2vw,18px);font-weight:700;letter-spacing:-.015em;color:#0f172a;line-height:1.15;margin-bottom:.3rem}
+          .qs-sub{font-size:12.5px;color:#475569;line-height:1.4;font-weight:500}
           @keyframes qsFade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
         </style>
         <!-- TICKER -->
