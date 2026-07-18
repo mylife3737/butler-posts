@@ -353,40 +353,7 @@
 </head>
 <body>
 
-<div id="fbUrlModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto;-webkit-overflow-scrolling:touch">
-  <div style="background:#fff;max-width:480px;width:100%;border-radius:14px;padding:1.25rem;box-shadow:0 20px 50px rgba(0,0,0,.3);border-top:6px solid #1877f2;margin:auto 0">
-    <div style="font-size:22px;font-weight:900;color:#1877f2;margin-bottom:.5rem">Enter Cynthia's FB Personal URL</div>
-    <div style="font-size:14px;color:#1e293b;line-height:1.5;margin-bottom:.75rem">Paste the link to Cynthia's personal Facebook profile. This is where every "FB personal" post will be published.</div>
-    <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:.75rem;border-radius:6px;margin-bottom:.75rem;font-size:12px;color:#78350f;line-height:1.6">
-      <b>Make her profile PUBLIC first:</b><br>
-      1. FB → ☰ menu → Settings & Privacy → Settings<br>
-      2. Audience & Visibility → Posts<br>
-      3. "Who can see your future posts?" → <b>Public</b>
-    </div>
-    <input id="fbUrlInput" type="url" placeholder="https://www.facebook.com/cynthia.butler" style="width:100%;padding:.7rem;border:2px solid #cbd5e1;border-radius:8px;font-size:14px;margin-bottom:.75rem" />
-    <div style="display:flex;gap:.5rem">
-      <button onclick="fbUrlSubmit()" style="flex:1;background:#16a34a;color:#fff;padding:.75rem;border:0;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer">Submit</button>
-      <button onclick="fbUrlSkip()" style="background:#e2e8f0;color:#475569;padding:.75rem 1rem;border:0;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer">Skip for now</button>
-    </div>
-    <div id="fbUrlErr" style="color:#dc2626;font-size:12px;margin-top:.5rem;display:none">Enter a valid Facebook profile URL.</div>
-  </div>
-</div>
-<script>
-  function fbUrlSubmit(){
-    var v=document.getElementById('fbUrlInput').value.trim();
-    if(!v||!/facebook\.com\/./.test(v)){document.getElementById('fbUrlErr').style.display='block';return;}
-    localStorage.setItem('cindy_fb_p_v6',v);
-    localStorage.removeItem('fbUrlSkippedAt');
-    document.getElementById('fbUrlModal').style.display='none';
-    var el=document.getElementById('setup-fb-personal');if(el)el.value=v;
-  }
-  function fbUrlSkip(){document.getElementById('fbUrlModal').style.display='none';}
-  (function(){
-    var v=localStorage.getItem('cindy_fb_p_v6');
-    var filled = v && v.trim() && v!=='https://www.facebook.com/' && /facebook\.com\/./.test(v);
-    if(!filled){document.getElementById('fbUrlModal').style.display='flex';}
-  })();
-</script>
+<!-- ponytail: FB personal URL is hardcoded (cynthia.butler.54). Modal + setup input removed. -->
 
     <header class="max-w-7xl mx-auto p-6 md:p-10 flex flex-col items-start gap-4 border-b border-slate-200">
         <span class="bg-red-600 text-white text-[10px] font-black uppercase px-4 py-1.5 rounded-full tracking-widest">District 75</span>
@@ -481,10 +448,9 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <div class="space-y-6">
                     <div>
-                        <label class="text-[10px] font-black text-slate-400 uppercase block mb-2">Facebook (Personal) — <span class="text-blue-700">Editable</span></label>
-                        <div class="flex gap-2">
-                            <input type="text" id="setup-fb-personal" class="flex-1 border-2 border-blue-100 rounded-xl p-4 text-[11px] font-bold text-slate-900 outline-none" oninput="savePersonalUrl(this.value)">
-                            <button onclick="savePersonalUrl(document.getElementById('setup-fb-personal').value); this.textContent='Saved ✓'; setTimeout(()=>this.textContent='Submit', 1500)" class="bg-blue-600 hover:bg-blue-700 text-white font-black text-[11px] px-5 rounded-xl">Submit</button>
+                        <label class="text-[10px] font-black text-slate-400 uppercase block mb-2">Facebook (Personal)</label>
+                        <div class="secure-link-box">
+                            <a href="https://www.facebook.com/cynthia.butler.54/" target="_blank" class="visible-url-text post-link">https://www.facebook.com/cynthia.butler.54/</a>
                         </div>
                     </div>
                     <div>
@@ -513,11 +479,12 @@
     </div>
 
     <script>
-        let urls = { 
-            fb_personal: localStorage.getItem('cindy_fb_p_v6') || "https://www.facebook.com/", 
-            nd_personal: "https://nextdoor.com", 
-            fb_group: "https://www.facebook.com/people/Cynthia-Butler-for-State-House/61573214956476/", 
-            nd_group: "https://nextdoor.com/g/v8uk5mvtx/?is=groups_section_rhr" 
+        // ponytail: all four URLs hardcoded; no user-editable setup any more.
+        let urls = {
+            fb_personal: "https://www.facebook.com/cynthia.butler.54/",
+            nd_personal: "https://nextdoor.com",
+            fb_group: "https://www.facebook.com/people/Cynthia-Butler-for-State-House/61573214956476/",
+            nd_group: "https://nextdoor.com/g/v8uk5mvtx/?is=groups_section_rhr"
         };
         
         const motivations = ["🌟 YOU'RE CRUSHING IT, CINDY!", "🗳️ VICTORY IS YOURS, CYNTHIA!", "💪 PROUD OF YOU, FUTURE REPRESENTATIVE!", "✨ FANTASTIC WORK, CINDY!", "🚀 INCREDIBLE MOMENTUM, CYNTHIA!", "💙 LEADING THE WAY, CINDY!"];
@@ -685,7 +652,6 @@
             { id: 119, date: "Wed Nov 4", sortDate: new Date(2026, 10, 4), type: "both", text: "Whatever the results bring — I am PROUD of every single person who fought alongside this campaign. You showed District 75 what community looks like. You showed what courage looks like. Thank you from the bottom of my heart. This is just the beginning.\n\nShare your favorite memory from this campaign below. You are the reason this happened. 💙 votecynthiabutler.com", instr: "Post at 9 AM while people are checking their phones for results, share to your personal timeline, and reply…", tip: "THANK YOU" }
         ];
 
-        function savePersonalUrl(val) { urls.fb_personal = val; localStorage.setItem('cindy_fb_p_v6', val); }
 
         const urlNames = {
             'votecynthiabutler.com': 'VoteCynthiaButler.com',
@@ -830,6 +796,13 @@
             setTimeout(() => pop.remove(), 5500);
         }
 
+        function updateTicker(allTodayDone) {
+            const msg = allTodayDone ? "You've completed today's tasks! 🎉 Keep it up, Cindy!" : "Did you post yet today, Cindy?";
+            const el = document.getElementById('ticker-content');
+            if (el) el.innerHTML = `<span class="mr-20 ticker-glow">${msg}</span><span class="mr-20 ticker-glow">${msg}</span><span class="mr-20 ticker-glow">${msg}</span>`;
+            document.getElementById('ticker-container').classList.toggle('ticker-done', allTodayDone);
+        }
+
         function render() {
             const list = document.getElementById('deployment-container');
             const arch = document.getElementById('archive-container');
@@ -872,7 +845,7 @@
                             <div style="display:flex;align-items:center;gap:1rem;">
                                 <span style="font-size:20px;">✅</span>
                                 <div>
-                                    <div style="font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:#64748b;">${p.date} &nbsp;·&nbsp; ${p.type}${doneTs[p.id] ? ' &nbsp;·&nbsp; <span style="color:#059669;">Posted ' + fmtTs(doneTs[p.id]) + '</span>' : ''}</div>
+                                    <div style="font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:#64748b;">${p.date} &nbsp;·&nbsp; ${p.type}${doneTs[p.id] ? ' &nbsp;·&nbsp; <span style="color:#059669;">Marked Completed ' + fmtTs(doneTs[p.id]) + '</span>' : ''}</div>
                                     <div style="font-size:13px;font-weight:700;color:#1e293b;margin-top:2px;">${p.text.split('\n')[0].substring(0,80)}${p.text.length > 80 ? '…' : ''}</div>
                                 </div>
                             </div>
@@ -916,10 +889,7 @@
             });
 
             const allTodayDone = todayPosts.length > 0 && todayPosts.every(p => done.includes(p.id));
-            const tickerMsg = allTodayDone ? "You've completed today's tasks! 🎉 Keep it up, Cindy!" : "Did you post yet today, Cindy?";
-            const tickerEl = document.getElementById('ticker-content');
-            if (tickerEl) tickerEl.innerHTML = `<span class="mr-20 ticker-glow">${tickerMsg}</span><span class="mr-20 ticker-glow">${tickerMsg}</span><span class="mr-20 ticker-glow">${tickerMsg}</span>`;
-            document.getElementById('ticker-container').classList.toggle('ticker-done', allTodayDone);
+            updateTicker(allTodayDone);
         }
 
         function toggle(id) {
@@ -956,6 +926,9 @@
                 } else {
                     const idx = Math.floor(Math.random() * motivations.length);
                     showPopOnCard(id, idx); playToday(idx);
+                    // If this checkbox completed the last of today's posts, flip the ticker to green immediately
+                    const todayPosts = allPosts.filter(x => { const xd = new Date(x.sortDate); xd.setHours(0,0,0,0); return xd.getTime() === now.getTime(); });
+                    if (todayPosts.length && todayPosts.every(x => done.includes(x.id))) updateTicker(true);
                 }
                 setTimeout(() => showUndoOnCard(id), 4000);
                 setTimeout(render, 7800);
@@ -1017,7 +990,6 @@
         function updateCounter() { const count = document.querySelectorAll('.photo-item').length; document.getElementById('gallery-counter').innerText = `${count} of 20 images uploaded`; }
 
         window.onload = () => {
-            document.getElementById('setup-fb-personal').value = urls.fb_personal;
             loadPh();
             render();
             window.scrollTo(0, 0);
