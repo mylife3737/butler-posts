@@ -364,13 +364,16 @@
     localStorage.setItem('fbUrlSkippedAt', String(Date.now()));
     document.getElementById('fbUrlModal').style.display='none';
   }
-  (function(){
+  window.addEventListener('load', function(){
     var v=localStorage.getItem('cindy_fb_p_v6');
-    if(v&&v!=='https://www.facebook.com/')return;
+    var filled = v && v.trim() && v!=='https://www.facebook.com/' && /facebook\.com\/./.test(v);
+    if(filled) return;
     var skipped=parseInt(localStorage.getItem('fbUrlSkippedAt')||'0',10);
     var dayMs=24*60*60*1000;
-    if(Date.now()-skipped>=dayMs){document.getElementById('fbUrlModal').style.display='flex';}
-  })();
+    if(Date.now()-skipped>=dayMs){
+      document.getElementById('fbUrlModal').style.display='flex';
+    }
+  });
 </script>
 
     <header class="max-w-7xl mx-auto p-6 md:p-10 flex flex-col items-start gap-4 border-b border-slate-200">
@@ -387,22 +390,43 @@
     </nav>
 
     <div id="view-rollout" class="p-4 md:p-10">
-        <div class="max-w-7xl mx-auto mb-6 flex flex-wrap items-center gap-2">
-            <span class="text-[9px] font-black uppercase tracking-widest text-slate-500 mr-1">How</span>
-            <div class="flex items-center gap-1.5 bg-gradient-to-br from-blue-700 to-blue-900 text-white px-3 py-1.5 rounded-full shadow-sm">
-                <span class="text-sm">📋</span>
-                <span class="text-[10px] font-bold uppercase tracking-wider">1&nbsp;Copy</span>
-            </div>
-            <span class="text-slate-300 text-xs">→</span>
-            <div class="flex items-center gap-1.5 bg-gradient-to-br from-red-500 to-red-700 text-white px-3 py-1.5 rounded-full shadow-sm" title="Phone: long-press → Paste. Computer: Ctrl+V or ⌘+V">
-                <span class="text-sm">📱</span>
-                <span class="text-[10px] font-bold uppercase tracking-wider">2&nbsp;Paste</span>
-                <span class="text-[9px] font-semibold opacity-90 hidden sm:inline">(long-press · Ctrl+V)</span>
-            </div>
-            <span class="text-slate-300 text-xs">→</span>
-            <div class="flex items-center gap-1.5 bg-gradient-to-br from-emerald-500 to-emerald-700 text-white px-3 py-1.5 rounded-full shadow-sm">
-                <span class="text-sm">✅</span>
-                <span class="text-[10px] font-bold uppercase tracking-wider">3&nbsp;Mark Done</span>
+        <div class="max-w-7xl mx-auto mb-8">
+            <div class="relative overflow-hidden rounded-3xl p-1 bg-gradient-to-r from-blue-600 via-fuchsia-500 to-red-500 shadow-lg">
+                <div class="bg-white/95 backdrop-blur rounded-[1.35rem] p-4 md:p-5">
+                    <div class="flex items-center justify-between gap-3 mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg animate-pulse">✨</span>
+                            <span class="text-[11px] font-black uppercase tracking-widest bg-gradient-to-r from-blue-700 to-red-600 bg-clip-text text-transparent">Post in 3 taps</span>
+                        </div>
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-slate-400 hidden md:inline">60 sec</span>
+                    </div>
+                    <div class="flex items-stretch gap-2 md:gap-3 text-white">
+                        <div class="flex-1 relative bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl p-3 flex items-center gap-2.5 shadow-md hover:scale-[1.02] transition-transform">
+                            <div class="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center text-xl shrink-0">📋</div>
+                            <div class="min-w-0">
+                                <div class="text-[9px] font-black uppercase tracking-widest opacity-70 leading-none mb-0.5">Step 1</div>
+                                <div class="text-[13px] font-black leading-tight">Copy the post</div>
+                            </div>
+                        </div>
+                        <div class="self-center text-slate-300 font-bold hidden sm:block">→</div>
+                        <div class="flex-1 relative bg-gradient-to-br from-fuchsia-500 to-pink-600 rounded-xl p-3 flex items-center gap-2.5 shadow-md hover:scale-[1.02] transition-transform">
+                            <div class="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center text-xl shrink-0">📱</div>
+                            <div class="min-w-0">
+                                <div class="text-[9px] font-black uppercase tracking-widest opacity-70 leading-none mb-0.5">Step 2</div>
+                                <div class="text-[13px] font-black leading-tight">Paste & post</div>
+                                <div class="text-[9px] font-semibold opacity-90 leading-tight mt-0.5">long‑press <span class="hidden md:inline">· Ctrl+V</span></div>
+                            </div>
+                        </div>
+                        <div class="self-center text-slate-300 font-bold hidden sm:block">→</div>
+                        <div class="flex-1 relative bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-3 flex items-center gap-2.5 shadow-md hover:scale-[1.02] transition-transform">
+                            <div class="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center text-xl shrink-0">✅</div>
+                            <div class="min-w-0">
+                                <div class="text-[9px] font-black uppercase tracking-widest opacity-70 leading-none mb-0.5">Step 3</div>
+                                <div class="text-[13px] font-black leading-tight">Mark done</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- TICKER -->
