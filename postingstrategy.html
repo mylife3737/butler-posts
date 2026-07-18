@@ -150,11 +150,11 @@
             100% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); outline-color: #ef4444; }
         }
 
-        /* CARD-LEVEL POPUP — background set dynamically per type */
+        /* CARD-LEVEL POPUP — anchored near the Mark Done row (top of card) */
         .card-popup {
             position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
+            top: 3.25rem; left: 50%;
+            transform: translate(-50%, 0);
             color: white;
             padding: 0.85rem 1.25rem;
             border-radius: 1.25rem;
@@ -170,16 +170,16 @@
             width: max-content;
             text-align: center;
             line-height: 1.25;
-            /* ponytail: was white-space:nowrap; broke on narrow cards */
+            /* ponytail: moved from card center to top so it lands near Mark Done */
         }
         @media (max-width: 480px) {
-            .card-popup { font-size: 12px; letter-spacing: 1px; padding: 0.6rem 0.9rem; }
+            .card-popup { font-size: 12px; letter-spacing: 1px; padding: 0.6rem 0.9rem; top: 2.75rem; }
         }
         @keyframes card-pop {
-            0%   { opacity: 0; transform: translate(-50%, -65%); }
-            15%  { opacity: 1; transform: translate(-50%, -50%); }
-            75%  { opacity: 1; transform: translate(-50%, -50%); }
-            100% { opacity: 0; transform: translate(-50%, -38%); }
+            0%   { opacity: 0; transform: translate(-50%, -15px); }
+            15%  { opacity: 1; transform: translate(-50%, 0); }
+            75%  { opacity: 1; transform: translate(-50%, 0); }
+            100% { opacity: 0; transform: translate(-50%, 8px); }
         }
         /* OVERDUE BADGE */
         .overdue-badge {
@@ -383,8 +383,8 @@
 
     <nav class="max-w-7xl mx-auto flex border-b border-slate-200 px-4 md:px-10 overflow-x-auto no-scrollbar">
         <button onclick="switchTab('rollout')" id="btn-rollout" class="tab-btn active">Rollout Schedule</button>
-        <button onclick="switchTab('gallery')" id="btn-gallery" class="tab-btn">Photo Gallery</button>
         <button onclick="switchTab('archive')" id="btn-archive" class="tab-btn">Archived Posts</button>
+        <button onclick="switchTab('gallery')" id="btn-gallery" class="tab-btn">Photo Gallery</button>
         <button onclick="switchTab('setup')" id="btn-setup" class="tab-btn">Account Setup</button>
     </nav>
 
