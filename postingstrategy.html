@@ -502,6 +502,19 @@
         
         const motivations = ["🌟 YOU'RE CRUSHING IT, CINDY!", "🗳️ VICTORY IS YOURS, CYNTHIA!", "💪 PROUD OF YOU, FUTURE REPRESENTATIVE!", "✨ FANTASTIC WORK, CINDY!", "🚀 INCREDIBLE MOMENTUM, CYNTHIA!", "💙 LEADING THE WAY, CINDY!"];
 
+        const overdueMessages = [
+            "🕰️ Fashionably late works — you're back on track, Cindy!",
+            "🌙 Better late than never. Caught up and moving!",
+            "☕ It's OK to be tardy — the campaign forgives. Back in it!",
+            "🐢 Slow start, strong finish. Tortoise-mode victory!",
+            "🌤️ Rough start, sunny finish. You're on schedule again.",
+            "🌱 Late doesn't mean lost. You're rolling, Cindy.",
+            "⏰ Late? Sure. Done? YES. That's what matters!",
+            "🧭 Late start, sharp finish. Welcome back to the timeline!",
+            "🍞 Butter late than never. Toast to catching up, Cindy!",
+            "🎯 A little late, dead on target. Back on the board!"
+        ];
+
         const earlyMessages = [
             "⚡ AHEAD OF SCHEDULE — You're unstoppable, Cindy!",
             "🌟 FUTURE-PROOFING! Way to plan ahead, Cynthia!",
@@ -711,6 +724,8 @@
 
         function playToday(idx) { try { soundsToday[idx % soundsToday.length](); } catch(e){} }
         function playEarly(idx) { try { soundsEarly[idx % soundsEarly.length](); } catch(e){} }
+        // Sad trombone — wah wah wah waaah (descending muted)
+        function playOverdue(){ try { const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [[349,.0,.22],[311,.28,.22],[277,.56,.22],[233,.84,.6]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sawtooth';o.frequency.setValueAtTime(f,t+dt);o.frequency.linearRampToValueAtTime(f*.92,t+dt+dur);g.gain.setValueAtTime(.22,t+dt);g.gain.setValueAtTime(.22,t+dt+dur-.03);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.06);o.start(t+dt);o.stop(t+dt+dur+.08); }); } catch(e){} }
 
         const popColors = ['#10b981','#3b82f6','#8b5cf6','#ec4899','#f97316','#06b6d4','#1a2d5a'];
         function showPopOnCard(id, idx) {
@@ -734,6 +749,18 @@
             pop.textContent = earlyMessages[idx % earlyMessages.length];
             card.appendChild(pop);
             setTimeout(() => pop.remove(), 3000);
+        }
+
+        function showOverduePop(id, idx) {
+            const card = document.querySelector('[data-post-id="' + id + '"]');
+            if (!card) return;
+            const pop = document.createElement('div');
+            pop.className = 'card-popup';
+            pop.style.background = '#7c2d12';
+            pop.style.color = '#fef3c7';
+            pop.textContent = overdueMessages[idx % overdueMessages.length];
+            card.appendChild(pop);
+            setTimeout(() => pop.remove(), 3200);
         }
 
         function render() {
@@ -834,9 +861,13 @@
                 done.push(id);
                 localStorage.setItem('c_done_v6', JSON.stringify(done));
                 localStorage.setItem('c_posted_date_v6', new Date().toDateString());
+                const isPast = pd < now;
                 if (isFuture) {
                     const idx = _earlyIdx++ % earlyMessages.length;
                     showEarlyPop(id, idx); playEarly(idx);
+                } else if (isPast) {
+                    const idx = Math.floor(Math.random() * overdueMessages.length);
+                    showOverduePop(id, idx); playOverdue();
                 } else {
                     const idx = Math.floor(Math.random() * motivations.length);
                     showPopOnCard(id, idx); playToday(idx);
