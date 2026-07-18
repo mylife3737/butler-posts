@@ -136,7 +136,7 @@
             100% { box-shadow: 0 0 10px rgba(0, 255, 65, 0.3); outline-color: var(--neon-green); }
         }
 
-        /* PULSING RED GLOW — overdue cards */
+        /* PULSING RED GLOW — overdue cards (generic) */
         .overdue-post-glow {
             outline: 4px solid #ef4444;
             outline-offset: 3px;
@@ -148,6 +148,19 @@
             0%   { box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); outline-color: #ef4444; }
             50%  { box-shadow: 0 0 50px rgba(239, 68, 68, 0.9), 0 0 90px rgba(239, 68, 68, 0.4); outline-color: #ff6b6b; }
             100% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); outline-color: #ef4444; }
+        }
+
+        /* PULSING ORANGE GLOW — Jul 17 only (setup-delay flag) */
+        .jul17-post-glow {
+            outline: 4px solid #f97316;
+            outline-offset: 3px;
+            border: none !important;
+            animation: neon-orange-glow 1.5s infinite ease-in-out;
+        }
+        @keyframes neon-orange-glow {
+            0%   { box-shadow: 0 0 10px rgba(249, 115, 22, 0.3); outline-color: #f97316; }
+            50%  { box-shadow: 0 0 50px rgba(249, 115, 22, 0.9), 0 0 90px rgba(251, 146, 60, 0.4); outline-color: #fb923c; }
+            100% { box-shadow: 0 0 10px rgba(249, 115, 22, 0.3); outline-color: #f97316; }
         }
 
         /* CARD-LEVEL POPUP — anchored near the Mark Done row (top of card) */
@@ -165,7 +178,7 @@
             z-index: 50;
             pointer-events: none;
             box-shadow: 0 12px 40px rgba(0,0,0,0.25);
-            animation: card-pop 2s forwards;
+            animation: card-pop 4s forwards;
             max-width: calc(100% - 1.5rem);
             width: max-content;
             text-align: center;
@@ -522,6 +535,15 @@
             "🎯 A little late, dead on target. Back on the board!"
         ];
 
+        // Jul 17 posts — assistant takes the blame (setup delay, not Cindy's fault)
+        const jul17Messages = [
+            "🙏 That one's on ME, Cindy — the dashboard wasn't ready yesterday. Thanks for catching up.",
+            "🫡 My fault, not yours. Jul 17 was a setup delay — you're posting now, that's what counts.",
+            "😔 Apologies, Cindy — this launch post was mine to hand you sooner. Back on schedule.",
+            "⚙️ Setup lag on my end yesterday — you did nothing wrong. Shipped now, momentum on.",
+            "💙 Take the win, Cindy. The 17th slipped because of ME. From here, we're rolling."
+        ];
+
         const earlyMessages = [
             "⚡ AHEAD OF SCHEDULE — You're unstoppable, Cindy!",
             "🌟 FUTURE-PROOFING! Way to plan ahead, Cynthia!",
@@ -733,6 +755,8 @@
         function playEarly(idx) { try { soundsEarly[idx % soundsEarly.length](); } catch(e){} }
         // Sad trombone — wah wah wah waaah (descending muted)
         function playOverdue(){ try { const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [[349,.0,.22],[311,.28,.22],[277,.56,.22],[233,.84,.6]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sawtooth';o.frequency.setValueAtTime(f,t+dt);o.frequency.linearRampToValueAtTime(f*.92,t+dt+dur);g.gain.setValueAtTime(.22,t+dt);g.gain.setValueAtTime(.22,t+dt+dur-.03);g.gain.exponentialRampToValueAtTime(.001,t+dt+dur+.06);o.start(t+dt);o.stop(t+dt+dur+.08); }); } catch(e){} }
+        // Jul 17 apology — soft descending chime (bell-like, sincere)
+        function playJul17(){ try { const C=new(window.AudioContext||window.webkitAudioContext)(),t=C.currentTime; [[880,.0,.55],[659,.35,.7],[523,.85,1.1]].forEach(([f,dt,dur])=>{ const o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.type='sine';o.frequency.value=f; g.gain.setValueAtTime(.001,t+dt); g.gain.exponentialRampToValueAtTime(.28,t+dt+.04); g.gain.exponentialRampToValueAtTime(.001,t+dt+dur); o.start(t+dt); o.stop(t+dt+dur+.05); }); } catch(e){} }
 
         const popColors = ['#10b981','#3b82f6','#8b5cf6','#ec4899','#f97316','#06b6d4','#1a2d5a'];
         function showPopOnCard(id, idx) {
@@ -743,7 +767,7 @@
             pop.style.background = popColors[Math.floor(Math.random() * popColors.length)];
             pop.textContent = motivations[idx % motivations.length];
             card.appendChild(pop);
-            setTimeout(() => pop.remove(), 3000);
+            setTimeout(() => pop.remove(), 4000);
         }
 
         function showEarlyPop(id, idx) {
@@ -755,7 +779,7 @@
             pop.style.color = '#1c1917';
             pop.textContent = earlyMessages[idx % earlyMessages.length];
             card.appendChild(pop);
-            setTimeout(() => pop.remove(), 3000);
+            setTimeout(() => pop.remove(), 4000);
         }
 
         function showOverduePop(id, idx) {
@@ -767,7 +791,43 @@
             pop.style.color = '#fef3c7';
             pop.textContent = overdueMessages[idx % overdueMessages.length];
             card.appendChild(pop);
-            setTimeout(() => pop.remove(), 3200);
+            setTimeout(() => pop.remove(), 4200);
+        }
+
+        // Undo pill lands in the exact spot the popup just left, clickable for ~1.6s
+        function showUndoOnCard(id) {
+            const card = document.querySelector('[data-post-id="' + id + '"]');
+            if (!card) return;
+            const undo = document.createElement('button');
+            undo.type = 'button';
+            undo.className = 'card-popup';
+            undo.style.background = '#0f172a';
+            undo.style.color = '#fff';
+            undo.style.pointerEvents = 'auto';
+            undo.style.cursor = 'pointer';
+            undo.style.border = '2px solid #fff';
+            undo.style.animation = 'card-pop 3.6s forwards';
+            undo.textContent = '↩ Undo';
+            undo.onclick = () => { undo.remove(); toggle(id); };
+            card.appendChild(undo);
+            setTimeout(() => undo.remove(), 3600);
+        }
+
+        function showJul17Pop(id, idx) {
+            const card = document.querySelector('[data-post-id="' + id + '"]');
+            if (!card) return;
+            const pop = document.createElement('div');
+            pop.className = 'card-popup';
+            pop.style.background = 'linear-gradient(135deg,#1e3a8a,#3b82f6)';
+            pop.style.color = '#fff';
+            pop.style.maxWidth = 'calc(100% - 1rem)';
+            pop.style.whiteSpace = 'normal';
+            pop.style.letterSpacing = '.5px';
+            pop.style.padding = '1rem 1.25rem';
+            pop.style.animation = 'card-pop 5.5s forwards';
+            pop.textContent = jul17Messages[idx % jul17Messages.length];
+            card.appendChild(pop);
+            setTimeout(() => pop.remove(), 5500);
         }
 
         function render() {
@@ -822,7 +882,7 @@
                 } else {
                     list.innerHTML += `
                     <div class="deployment-row">
-                        <div class="post-card-container frame-${p.type} ${isToday && !isDone ? 'current-post-glow' : isOverdue ? 'overdue-post-glow' : ''}" data-post-id="${p.id}">
+                        <div class="post-card-container frame-${p.type} ${isToday && !isDone ? 'current-post-glow' : isOverdue ? (pd.getTime() === new Date(2026, 6, 17).getTime() ? 'jul17-post-glow' : 'overdue-post-glow') : ''}" data-post-id="${p.id}">
                             <div class="flex justify-between items-center mb-6">
                                 <span class="text-[10px] font-black uppercase text-slate-400 tracking-widest">
                                     ${p.date}
@@ -882,13 +942,23 @@
                     const idx = _earlyIdx++ % earlyMessages.length;
                     showEarlyPop(id, idx); playEarly(idx);
                 } else if (isPast) {
-                    const idx = Math.floor(Math.random() * overdueMessages.length);
-                    showOverduePop(id, idx); playOverdue();
+                    // Jul 17 posts: assistant takes blame (dashboard wasn't ready). Others: generic overdue.
+                    const isJul17 = pd.getTime() === new Date(2026, 6, 17).getTime();
+                    if (isJul17) {
+                        const idx = Math.floor(Math.random() * jul17Messages.length);
+                        showJul17Pop(id, idx); playJul17();
+                        setTimeout(() => showUndoOnCard(id), 5500);
+                        setTimeout(render, 9200); return;
+                    } else {
+                        const idx = Math.floor(Math.random() * overdueMessages.length);
+                        showOverduePop(id, idx); playOverdue();
+                    }
                 } else {
                     const idx = Math.floor(Math.random() * motivations.length);
                     showPopOnCard(id, idx); playToday(idx);
                 }
-                setTimeout(render, 3100);
+                setTimeout(() => showUndoOnCard(id), 4000);
+                setTimeout(render, 7800);
             } else {
                 done = done.filter(i => i !== id);
                 delete doneTs[id];
