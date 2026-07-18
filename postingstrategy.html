@@ -156,7 +156,7 @@
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             color: white;
-            padding: 0.85rem 2rem;
+            padding: 0.85rem 1.25rem;
             border-radius: 1.25rem;
             font-weight: 900;
             font-size: 14px;
@@ -164,9 +164,16 @@
             letter-spacing: 2px;
             z-index: 50;
             pointer-events: none;
-            white-space: nowrap;
             box-shadow: 0 12px 40px rgba(0,0,0,0.25);
             animation: card-pop 2s forwards;
+            max-width: calc(100% - 1.5rem);
+            width: max-content;
+            text-align: center;
+            line-height: 1.25;
+            /* ponytail: was white-space:nowrap; broke on narrow cards */
+        }
+        @media (max-width: 480px) {
+            .card-popup { font-size: 12px; letter-spacing: 1px; padding: 0.6rem 0.9rem; }
         }
         @keyframes card-pop {
             0%   { opacity: 0; transform: translate(-50%, -65%); }
@@ -333,8 +340,8 @@
 </head>
 <body>
 
-<div id="fbUrlModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:center;justify-content:center;padding:1rem">
-  <div style="background:#fff;max-width:480px;width:100%;border-radius:14px;padding:1.75rem;box-shadow:0 20px 50px rgba(0,0,0,.3);border-top:6px solid #1877f2">
+<div id="fbUrlModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto;-webkit-overflow-scrolling:touch">
+  <div style="background:#fff;max-width:480px;width:100%;border-radius:14px;padding:1.25rem;box-shadow:0 20px 50px rgba(0,0,0,.3);border-top:6px solid #1877f2;margin:auto 0">
     <div style="font-size:22px;font-weight:900;color:#1877f2;margin-bottom:.5rem">Enter Cynthia's FB Personal URL</div>
     <div style="font-size:14px;color:#1e293b;line-height:1.5;margin-bottom:.75rem">Paste the link to Cynthia's personal Facebook profile. This is where every "FB personal" post will be published.</div>
     <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:.75rem;border-radius:6px;margin-bottom:.75rem;font-size:12px;color:#78350f;line-height:1.6">
