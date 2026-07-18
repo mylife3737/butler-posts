@@ -475,6 +475,17 @@
                     </div>
                 </div>
             </div>
+
+            <div class="mt-10 pt-8 border-t border-slate-200">
+                <h3 class="text-xs font-black uppercase tracking-widest mb-3">Sync Progress Between Devices</h3>
+                <p class="text-[11px] text-slate-500 mb-4 leading-relaxed">Mark-done state stays in each browser. To move progress from one device to another: <b>Copy Progress</b> here, open this page on the other device, and <b>Paste Progress</b>.</p>
+                <div class="flex flex-wrap gap-3">
+                    <button onclick="copyProgress(this)" class="bg-slate-900 text-white font-black text-[11px] uppercase tracking-widest px-5 py-3 rounded-xl">Copy Progress</button>
+                    <button onclick="pasteProgress()" class="bg-emerald-600 text-white font-black text-[11px] uppercase tracking-widest px-5 py-3 rounded-xl">Paste Progress</button>
+                    <button onclick="clearProgress()" class="bg-white border-2 border-slate-200 text-slate-600 font-black text-[11px] uppercase tracking-widest px-5 py-3 rounded-xl">Clear Local</button>
+                </div>
+                <p id="sync-msg" class="text-[11px] font-bold text-emerald-700 mt-3 min-h-[16px]"></p>
+            </div>
         </section>
     </div>
 
@@ -1026,6 +1037,35 @@
         }
         function loadPh() { const saved = JSON.parse(localStorage.getItem('c_images_v6') || '[]'); saved.forEach(src => addPh(src)); }
         function updateCounter() { const count = document.querySelectorAll('.photo-item').length; document.getElementById('gallery-counter').innerText = `${count} of 20 images uploaded`; }
+
+        // Sync progress across devices via copy/paste. Photos stay local (too big).
+        const SYNC_KEYS = ['c_done_v6', 'c_done_ts_v6', 'c_posted_date_v6'];
+        function syncMsg(t, color='#047857'){ const el=document.getElementById('sync-msg'); if(el){ el.textContent=t; el.style.color=color; setTimeout(()=>{ if(el.textContent===t) el.textContent=''; }, 4000);} }
+        function copyProgress(btn){
+            const blob = {}; SYNC_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v != null) blob[k] = v; });
+            const payload = 'CINDY:' + btoa(unescape(encodeURIComponent(JSON.stringify(blob))));
+            navigator.clipboard.writeText(payload).then(
+                () => { if(btn){btn.textContent='Copied ✓'; setTimeout(()=>btn.textContent='Copy Progress',1500);} syncMsg('Progress copied — paste it on the other device.'); },
+                () => { window.prompt('Copy this progress code:', payload); }
+            );
+        }
+        function pasteProgress(){
+            const inp = window.prompt('Paste the progress code from your other device:');
+            if (!inp) return;
+            if (!inp.startsWith('CINDY:')) { syncMsg('Not a valid progress code.', '#b91c1c'); return; }
+            try {
+                const blob = JSON.parse(decodeURIComponent(escape(atob(inp.slice(6)))));
+                SYNC_KEYS.forEach(k => { if (blob[k] != null) localStorage.setItem(k, blob[k]); else localStorage.removeItem(k); });
+                render();
+                syncMsg('Progress imported — dashboard updated.');
+            } catch (e) { syncMsg('Progress code is corrupted.', '#b91c1c'); }
+        }
+        function clearProgress(){
+            if (!confirm('Clear all mark-done state on THIS device? (Photos and campaign links stay.)')) return;
+            SYNC_KEYS.forEach(k => localStorage.removeItem(k));
+            render();
+            syncMsg('Local progress cleared.');
+        }
 
         window.onload = () => {
             loadPh();
